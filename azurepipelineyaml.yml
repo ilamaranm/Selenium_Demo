@@ -1,0 +1,19 @@
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '21'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- powershell: |
+   $chromedriverUrl = "https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.100/win64/chromedriver-win64.zip"
+   Invoke-WebRequest -Uri $chromedriverUrl -OutFile chromedriver.zip
+   New-Item -ItemType Directory -Force -Path C:\webdriver
+   Expand-Archive -Path chromedriver.zip -DestinationPath C:\webdriver  
+  displayName: 'Download and Install Chromedriver'
+
+- script: mvn clean install
+  displayName: 'Build with Maven'
